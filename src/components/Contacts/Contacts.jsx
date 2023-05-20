@@ -1,31 +1,28 @@
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { ChatBox } from "../ChatBox/ChatBox";
 
 const Contacts = (props) => {
-    const { id } = useParams();
-
     return (
         <>
             <div
                 className="block active"
                 onClick={() => {
-                    props.setUserNumber(props.contact);
-                    console.log(props.userNumber);
+                    props.setUserNumber(props.number);
+                    console.log(props.number);
                 }}
             >
                 <div className="imagebox">
                     <img
                         className="cover"
-                        src={props.contactAvatar}
                         alt="Contact Avatar"
+                        src={props.avatar}
                     />
                 </div>
                 <div className="details">
                     <div className="listHead">
-                        <h4>{props.contact}</h4>
+                        <h4>{props.number}</h4>
                     </div>
                     <div className="details_message">
-                        <p></p>
+                        <p>{props.avatar}</p>
                     </div>
                 </div>
             </div>

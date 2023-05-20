@@ -11,26 +11,46 @@ import { Contacts } from "../../components/Contacts/Contacts";
 import { ChatBox } from "../../components/ChatBox/ChatBox";
 
 const Home = (props) => {
-    const [contacts, setContacts] = useState([]);
     const [myMessage, setMyMessage] = useState([]);
     const [value, setValue] = useState("");
     const [userNumber, setUserNumber] = useState("");
     const [searchValue, setSearchValue] = useState("");
     const [inComingMessage, setInComingMessage] = useState([]);
     const [sender, setSender] = useState([]);
-    const checkContact = (element) => element === userNumber;
+    const checkContact = (element) => element.number === userNumber;
+
+    const newContact = {
+        number: userNumber,
+        avatar: friendAvatar,
+        userMessages: inComingMessage,
+        hisFriendMessages: myMessage,
+    };
+    const [contacts, setContacts] = useState([]);
+    const displayContact = contacts.map((contact) => {
+        return (
+            <Contacts
+                key={contact.number}
+                number={contact.number}
+                avatar={contact.avatar}
+                setUserNumber={setUserNumber}
+                userMessages={contact.userMessages}
+                hisFriendMessages={contact.hisFriendMessages}
+            />
+        );
+    });
 
     const createContact = (e) => {
         e.preventDefault();
         if (contacts.length === 0) {
-            setContacts((contacts) => [...contacts, userNumber]);
+            setContacts([...contacts, newContact]);
         } else if (contacts.some(checkContact) === false) {
-            setContacts((contacts) => [...contacts, userNumber]);
+            setContacts([...contacts, newContact]);
         }
         setSearchValue("");
 
         console.log(contacts);
         console.log(userNumber);
+        console.log(newContact);
     };
 
     const sendMessage = (e) => {
@@ -156,16 +176,7 @@ const Home = (props) => {
                         </form>
                     </div>
                     <div className="chatlist">
-                        {contacts &&
-                            contacts.map((contact) => (
-                                <Contacts
-                                    contact={contact}
-                                    key={contact}
-                                    setUserNumber={setUserNumber}
-                                    userNumber={userNumber}
-                                    contactAvatar={friendAvatar}
-                                />
-                            ))}
+                        {contacts && <>{displayContact}</>}
                     </div>
                 </div>
 
@@ -173,7 +184,11 @@ const Home = (props) => {
                     <div className="header">
                         <div className="imgText">
                             <div className="userimg">
-                                <img className="cover" src={friendAvatar} />
+                                <img
+                                    className="cover"
+                                    src={friendAvatar}
+                                    alt="Friend Avatar"
+                                />
                             </div>
 
                             <h4>User</h4>
@@ -341,4 +356,15 @@ export { Home };
 const idInstance = "1101821309";
     const apiTokenInstance =
         "6a9c1aff89e2427ca9435d0a7168e92f0a679ccf6c0a4f4abd"
+*/
+
+/*
+ {(myMessage || inComingMessage) && (
+                        <ChatBox
+                            my_message={myMessage}
+                            friend_message={inComingMessage}
+                            friend_name={sender}
+                        />
+                    )}
+
 */
