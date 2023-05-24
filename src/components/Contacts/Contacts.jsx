@@ -6,7 +6,7 @@ const Contacts = (props) => {
             className="block active"
             onClick={() => {
                 props.setUserNumber(props.number);
-                console.log(props.number);
+                // console.log(props.number);
             }}
         >
             <div className="imagebox">
