@@ -22,9 +22,10 @@ const Home = (props) => {
     const newContact = {
         number: userNumber,
         avatar: friendAvatar,
-        userMessages: inComingMessage,
-        hisFriendMessages: myMessage,
+        userMessages: [],
+        hisFriendMessages: inComingMessage,
     };
+
     const [contacts, setContacts] = useState([]);
     const displayContact = contacts.map((contact) => {
         return (
@@ -38,6 +39,20 @@ const Home = (props) => {
             />
         );
     });
+    function change() {
+        setContacts(
+            contacts.map((obj) => {
+                if (obj.number === userNumber) {
+                    return {
+                        ...obj,
+                        userMessages: [...obj.userMessages, value],
+                    };
+                } else {
+                    return obj;
+                }
+            })
+        );
+    }
 
     const createContact = (e) => {
         e.preventDefault();
@@ -47,10 +62,6 @@ const Home = (props) => {
             setContacts([...contacts, newContact]);
         }
         setSearchValue("");
-
-        console.log(contacts);
-        console.log(userNumber);
-        console.log(newContact);
     };
 
     const sendMessage = (e) => {
@@ -71,10 +82,9 @@ const Home = (props) => {
         );
         setValue("");
         setMyMessage((myMessage) => [...myMessage, value]);
-
-        console.log(contacts);
+        change();
     };
-
+    console.log(contacts);
     useEffect(() => {
         const interval = setInterval(() => {
             fetch(
@@ -106,19 +116,34 @@ const Home = (props) => {
                             data.body.messageData &&
                             data.body.messageData.textMessageData
                         ) {
+                            setContacts(
+                                contacts.map((obj) => {
+                                    if (
+                                        obj.number ===
+                                        data.body.senderData.sender.slice(0, 11)
+                                    ) {
+                                        return {
+                                            ...obj,
+                                            hisFriendMessages: [
+                                                ...obj.hisFriendMessages,
+                                                data.body.messageData
+                                                    .textMessageData
+                                                    .textMessage,
+                                            ],
+                                        };
+                                    } else {
+                                        return console.log("lox");
+                                    }
+                                })
+                            );
+
                             setInComingMessage((mess) => [
                                 ...mess,
                                 data.body.messageData.textMessageData
-                                    .textMessage,
+                                    .textMessage +
+                                    " " +
+                                    data.body.senderData.sender,
                             ]);
-                            console.log(inComingMessage);
-                        }
-                        if (data.body.senderData) {
-                            setSender((sender) => [
-                                ...sender,
-                                data.body.senderData,
-                            ]);
-                            console.log(sender);
                         }
                     }
                 });
@@ -126,6 +151,8 @@ const Home = (props) => {
 
         return () => clearInterval(interval);
     }, []);
+    console.log(inComingMessage);
+    console.log(sender);
     return (
         <>
             <div className="container">
@@ -206,7 +233,6 @@ const Home = (props) => {
                         <ChatBox
                             my_message={myMessage}
                             friend_message={inComingMessage}
-                            friend_name={sender}
                         />
                     )}
                     <div className="chatbox_input">
@@ -244,67 +270,6 @@ const Home = (props) => {
 };
 export { Home };
 
-/*
-    const receiveNotification = () => {
-        fetch(
-            `https://api.green-api.com/waInstance${idInstance}/ReceiveNotification/${apiTokenInstance}`
-        )
-            .then((res) => res.json())
-            .then((data) => {
-                setReceiptId(data.receiptId);
-
-                if (
-                    data.body.messageData &&
-                    data.body.messageData.textMessageData
-                ) {
-                    setInComingMessage((mess) => [
-                        ...mess,
-                        data.body.messageData.textMessageData.textMessage,
-                    ]);
-                    console.log(inComingMessage);
-                }
-                if (data.body.senderData) {
-                    setSender(data.body.senderData);
-                }
-            });
-    };
-    useEffect(() => {
-        fetch(
-            `https://api.green-api.com/waInstance${idInstance}/ReceiveNotification/${apiTokenInstance}`
-        )
-            .then((res) => res.json())
-            .then((data) => {
-                setReceiptId(data.receiptId);
-                console.log(receiptId);
-                if (
-                    data.body.messageData &&
-                    data.body.messageData.textMessageData
-                ) {
-                    setInComingMessage((mess) => [
-                        ...mess,
-                        data.body.messageData.textMessageData.textMessage,
-                    ]);
-                    console.log(inComingMessage);
-                }
-                if (data.body.senderData) {
-                    setSender(data.body.senderData);
-                }
-                const deleteNotification = () => {
-                    fetch(
-                        `https://api.green-api.com/waInstance${idInstance}/DeleteNotification/${apiTokenInstance}/${receiptId}`,
-                        {
-                            method: "DELETE",
-                            headers: {
-                                Accept: "application/json",
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
-                };
-                deleteNotification();
-            });
-    }, [inComingMessage, receiptId]);
-*/
 /*
 <div>
                             <input
@@ -366,5 +331,36 @@ const idInstance = "1101821309";
                             friend_name={sender}
                         />
                     )}
+
+*/
+/*
+setContacts(
+                                contacts.map(
+                                    (obj) => {
+                                        if (
+                                            obj.number ===
+                                            data.body.senderData.sender.slice(
+                                                0,
+                                                11
+                                            )
+                                        ) {
+                                           
+                                            return {
+                                                ...obj,
+                                                hisFriendMessages: [
+                                                    ...obj.hisFriendMessages,
+                                                    data.body.messageData
+                                                        .textMessageData
+                                                        .textMessage,
+                                                ],
+                                            };
+                                        } else {
+                                            
+                                            return obj;
+                                        }
+                                    }
+                                )
+                            );
+
 
 */
