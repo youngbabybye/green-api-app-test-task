@@ -29,7 +29,7 @@ const AuthPage = (props) => {
                         onChange={(e) => setApiToken(e.target.value)}
                     />
                     <button type="submit" className="btn_auth">
-                        LOG IN
+                        <p>Sign In</p>
                     </button>
                 </form>
             </div>

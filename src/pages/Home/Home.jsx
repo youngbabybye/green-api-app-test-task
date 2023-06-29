@@ -11,41 +11,51 @@ import { Contacts } from "../../components/Contacts/Contacts";
 import { ChatBox } from "../../components/ChatBox/ChatBox";
 
 const Home = (props) => {
-    const [myMessage, setMyMessage] = useState([]);
     const [value, setValue] = useState("");
     const [userNumber, setUserNumber] = useState("");
     const [searchValue, setSearchValue] = useState("");
-    const [inComingMessage, setInComingMessage] = useState([]);
-    const [sender, setSender] = useState([]);
+    const [contacts, setContacts] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [selectedContact, setSelectedContact] = useState(false);
+
     const checkContact = (element) => element.number === userNumber;
 
     const newContact = {
         number: userNumber,
         avatar: friendAvatar,
         userMessages: [],
-        hisFriendMessages: inComingMessage,
+        hisFriendMessages: [],
+        all: [],
     };
 
-    const [contacts, setContacts] = useState([]);
     const displayContact = contacts.map((contact) => {
         return (
             <Contacts
+                onClick={() => {
+                    setSelectedContact(contact);
+                    setUserNumber(contact.number);
+                }}
                 key={contact.number}
                 number={contact.number}
                 avatar={contact.avatar}
                 setUserNumber={setUserNumber}
+                messages={contact.all}
                 userMessages={contact.userMessages}
                 hisFriendMessages={contact.hisFriendMessages}
+                setSelectedContact={setSelectedContact}
+                selectedContact={selectedContact}
             />
         );
     });
+
     function change() {
-        setContacts(
+        setContacts((contacts) =>
             contacts.map((obj) => {
                 if (obj.number === userNumber) {
                     return {
                         ...obj,
                         userMessages: [...obj.userMessages, value],
+                        all: [...obj.all, { text: value, flag: true }],
                     };
                 } else {
                     return obj;
@@ -81,10 +91,13 @@ const Home = (props) => {
             }
         );
         setValue("");
-        setMyMessage((myMessage) => [...myMessage, value]);
+        setMessages((myMessage) => [
+            ...myMessage,
+            { text: value, myMessage: true },
+        ]);
         change();
+        console.log(contacts);
     };
-    console.log(contacts);
     useEffect(() => {
         const interval = setInterval(() => {
             fetch(
@@ -93,8 +106,6 @@ const Home = (props) => {
                 .then((res) => res.json())
                 .then((data) => {
                     if (data) {
-                        console.log(data.receiptId);
-
                         fetch(
                             `https://api.green-api.com/waInstance${props.user.idInstance}/deleteNotification/${props.user.apiToken}/${data.receiptId}`,
                             {
@@ -107,16 +118,14 @@ const Home = (props) => {
                         )
                             .then((res) => res.json())
                             .then((data) => {
-                                if (data.result === true) {
-                                    console.log(data.result);
-                                }
+                                console.log("deleteNotification", data.result);
                             });
 
                         if (
                             data.body.messageData &&
                             data.body.messageData.textMessageData
                         ) {
-                            setContacts(
+                            setContacts((contacts) =>
                                 contacts.map((obj) => {
                                     if (
                                         obj.number ===
@@ -130,19 +139,29 @@ const Home = (props) => {
                                                     .textMessageData
                                                     .textMessage,
                                             ],
+                                            all: [
+                                                ...obj.all,
+                                                {
+                                                    text: data.body.messageData
+                                                        .textMessageData
+                                                        .textMessage,
+                                                    flag: false,
+                                                },
+                                            ],
                                         };
                                     } else {
-                                        return console.log("lox");
+                                        return obj;
                                     }
                                 })
                             );
 
-                            setInComingMessage((mess) => [
+                            setMessages((mess) => [
                                 ...mess,
-                                data.body.messageData.textMessageData
-                                    .textMessage +
-                                    " " +
-                                    data.body.senderData.sender,
+                                {
+                                    text: data.body.messageData.textMessageData
+                                        .textMessage,
+                                    myMessage: false,
+                                },
                             ]);
                         }
                     }
@@ -151,8 +170,7 @@ const Home = (props) => {
 
         return () => clearInterval(interval);
     }, []);
-    console.log(inComingMessage);
-    console.log(sender);
+
     return (
         <>
             <div className="container">
@@ -229,10 +247,10 @@ const Home = (props) => {
                             </li>
                         </ul>
                     </div>
-                    {(myMessage || inComingMessage) && (
+                    {messages && selectedContact && (
                         <ChatBox
-                            my_message={myMessage}
-                            friend_message={inComingMessage}
+                            messages={messages}
+                            selected={selectedContact}
                         />
                     )}
                     <div className="chatbox_input">
@@ -271,96 +289,7 @@ const Home = (props) => {
 export { Home };
 
 /*
-<div>
-                            <input
-                                type="text"
-                                placeholder="Search or start new chat"
-                                value={searchValue}
-                                onChange={(e) => {
-                                    setSearchValue(e.target.value);
-                                }}
-                            />
-
-                            <IonIcon
-                                src={searchOutline}
-                                className="search"
-                                onClick={() => {
-                                    setContacts((contacts) => [
-                                        ...contacts,
-                                        searchValue,
-                                    ]);
-                                }}
-                            ></IonIcon>
-                        </div>
-*/
-
-/*
-<input
-                            type="text"
-                            placeholder="Type a message"
-                            value={value}
-                            onChange={(e) => {
-                                setValue(e.target.value);
-                            }}
-                        />
-                        <button
-                            className="chatbox_btn"
-                            onClick={() => {
-                                sendMessage();
-                                setValue("");
-                                setMyMessage((myMessage) => [
-                                    ...myMessage,
-                                    value,
-                                ]);
-                            }}
-                        >
-                            Send Message
-                        </button>
-*/
-/*
 const idInstance = "1101821309";
     const apiTokenInstance =
         "6a9c1aff89e2427ca9435d0a7168e92f0a679ccf6c0a4f4abd"
-*/
-
-/*
- {(myMessage || inComingMessage) && (
-                        <ChatBox
-                            my_message={myMessage}
-                            friend_message={inComingMessage}
-                            friend_name={sender}
-                        />
-                    )}
-
-*/
-/*
-setContacts(
-                                contacts.map(
-                                    (obj) => {
-                                        if (
-                                            obj.number ===
-                                            data.body.senderData.sender.slice(
-                                                0,
-                                                11
-                                            )
-                                        ) {
-                                           
-                                            return {
-                                                ...obj,
-                                                hisFriendMessages: [
-                                                    ...obj.hisFriendMessages,
-                                                    data.body.messageData
-                                                        .textMessageData
-                                                        .textMessage,
-                                                ],
-                                            };
-                                        } else {
-                                            
-                                            return obj;
-                                        }
-                                    }
-                                )
-                            );
-
-
 */

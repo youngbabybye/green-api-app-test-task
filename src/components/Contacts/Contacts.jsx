@@ -1,14 +1,6 @@
-import { ChatBox } from "../ChatBox/ChatBox";
-
 const Contacts = (props) => {
     return (
-        <div
-            className="block active"
-            onClick={() => {
-                props.setUserNumber(props.number);
-                console.log(props.number);
-            }}
-        >
+        <div className="block active" onClick={props.onClick}>
             <div className="imagebox">
                 <img
                     className="cover"
@@ -21,7 +13,7 @@ const Contacts = (props) => {
                     <h4>{props.number}</h4>
                 </div>
                 <div className="details_message">
-                    <p>{props.avatar}</p>
+                    <p>Friend</p>
                 </div>
             </div>
         </div>
