@@ -30,13 +30,12 @@ const ChatBox = (props) => {
             </div>
 
             <div className="chatBox">
-                {props.messages &&
-                    props.selected &&
-                    props.selected.all.map((message) => (
+                {props.selected &&
+                    props.selected.allMessages.map((message) => (
                         <Message
                             key={Math.random()}
-                            text={message.text}
-                            myMessage={message.flag}
+                            textMessage={message.text}
+                            flagMessage={message.flag}
                         />
                     ))}
             </div>

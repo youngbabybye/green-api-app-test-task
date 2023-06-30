@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { IonIcon } from "@ionic/react";
 import { chatbox, ellipsisVertical, scanCircleOutline } from "ionicons/icons";
-import { mic, searchOutline, happyOutline } from "ionicons/icons";
-import { attachOutline, sendOutline, exitOutline } from "ionicons/icons";
+import { searchOutline, exitOutline } from "ionicons/icons";
 
 import "./Home.css";
 import userAvatar from "../../images/userAvatar.png";
@@ -15,7 +14,6 @@ const Home = (props) => {
     const [userNumber, setUserNumber] = useState("");
     const [searchValue, setSearchValue] = useState("");
     const [contacts, setContacts] = useState([]);
-    const [messages, setMessages] = useState([]);
     const [selectedContact, setSelectedContact] = useState(false);
 
     const checkContact = (element) => element.number === userNumber;
@@ -23,9 +21,7 @@ const Home = (props) => {
     const newContact = {
         number: userNumber,
         avatar: friendAvatar,
-        userMessages: [],
-        hisFriendMessages: [],
-        all: [],
+        allMessages: [],
     };
 
     const displayContact = contacts.map((contact) => {
@@ -39,9 +35,6 @@ const Home = (props) => {
                 number={contact.number}
                 avatar={contact.avatar}
                 setUserNumber={setUserNumber}
-                messages={contact.all}
-                userMessages={contact.userMessages}
-                hisFriendMessages={contact.hisFriendMessages}
                 setSelectedContact={setSelectedContact}
                 selectedContact={selectedContact}
             />
@@ -52,15 +45,12 @@ const Home = (props) => {
         setContacts((contacts) =>
             contacts.map((obj) => {
                 if (obj.number === userNumber) {
-                    setSelectedContact(obj);
-                    return {
-                        ...obj,
-                        userMessages: [...obj.userMessages, value],
-                        all: [...obj.all, { text: value, flag: true }],
-                    };
-                } else {
-                    return obj;
+                    obj.allMessages = [
+                        ...obj.allMessages,
+                        { text: value, flag: true },
+                    ];
                 }
+                return obj;
             })
         );
     }
@@ -92,10 +82,6 @@ const Home = (props) => {
             }
         );
         setValue("");
-        setMessages((myMessage) => [
-            ...myMessage,
-            { text: value, myMessage: true },
-        ]);
         change();
     };
     useEffect(() => {
@@ -131,39 +117,19 @@ const Home = (props) => {
                                         obj.number ===
                                         data.body.senderData.sender.slice(0, 11)
                                     ) {
-                                        setSelectedContact(obj);
-                                        return {
-                                            ...obj,
-                                            hisFriendMessages: [
-                                                ...obj.hisFriendMessages,
-                                                data.body.messageData
+                                        obj.allMessages = [
+                                            ...obj.allMessages,
+                                            {
+                                                text: data.body.messageData
                                                     .textMessageData
                                                     .textMessage,
-                                            ],
-                                            all: [
-                                                ...obj.all,
-                                                {
-                                                    text: data.body.messageData
-                                                        .textMessageData
-                                                        .textMessage,
-                                                    flag: false,
-                                                },
-                                            ],
-                                        };
-                                    } else {
-                                        return obj;
+                                                flag: false,
+                                            },
+                                        ];
                                     }
+                                    return obj;
                                 })
                             );
-
-                            setMessages((mess) => [
-                                ...mess,
-                                {
-                                    text: data.body.messageData.textMessageData
-                                        .textMessage,
-                                    myMessage: false,
-                                },
-                            ]);
                         }
                     }
                 });
@@ -227,9 +193,8 @@ const Home = (props) => {
                 </div>
 
                 <div className="rightside">
-                    {messages && selectedContact && (
+                    {selectedContact && (
                         <ChatBox
-                            messages={messages}
                             selected={selectedContact}
                             setValue={setValue}
                             sendMessage={sendMessage}
@@ -242,9 +207,3 @@ const Home = (props) => {
     );
 };
 export { Home };
-
-/*
-const idInstance = "1101821309";
-    const apiTokenInstance =
-        "6a9c1aff89e2427ca9435d0a7168e92f0a679ccf6c0a4f4abd"
-*/

@@ -2,10 +2,10 @@ const Message = (props) => {
     return (
         <div
             className={`message ${
-                props.myMessage ? "my_message" : "friend_message"
+                props.flagMessage ? "my_message" : "friend_message"
             }`}
         >
-            <p>{props.text}</p>
+            <p>{props.textMessage}</p>
         </div>
     );
 };
