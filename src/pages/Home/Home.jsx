@@ -52,6 +52,7 @@ const Home = (props) => {
         setContacts((contacts) =>
             contacts.map((obj) => {
                 if (obj.number === userNumber) {
+                    setSelectedContact(obj);
                     return {
                         ...obj,
                         userMessages: [...obj.userMessages, value],
@@ -96,7 +97,6 @@ const Home = (props) => {
             { text: value, myMessage: true },
         ]);
         change();
-        console.log(contacts);
     };
     useEffect(() => {
         const interval = setInterval(() => {
@@ -131,6 +131,7 @@ const Home = (props) => {
                                         obj.number ===
                                         data.body.senderData.sender.slice(0, 11)
                                     ) {
+                                        setSelectedContact(obj);
                                         return {
                                             ...obj,
                                             hisFriendMessages: [
@@ -226,61 +227,15 @@ const Home = (props) => {
                 </div>
 
                 <div className="rightside">
-                    <div className="header">
-                        <div className="imgText">
-                            <div className="userimg">
-                                <img
-                                    className="cover"
-                                    src={friendAvatar}
-                                    alt="Friend Avatar"
-                                />
-                            </div>
-
-                            <h4>User</h4>
-                        </div>
-                        <ul className="nav_icons">
-                            <li>
-                                <IonIcon src={searchOutline}></IonIcon>
-                            </li>
-                            <li>
-                                <IonIcon src={ellipsisVertical}></IonIcon>
-                            </li>
-                        </ul>
-                    </div>
                     {messages && selectedContact && (
                         <ChatBox
                             messages={messages}
                             selected={selectedContact}
+                            setValue={setValue}
+                            sendMessage={sendMessage}
+                            value={value}
                         />
                     )}
-                    <div className="chatbox_input">
-                        <IonIcon
-                            src={happyOutline}
-                            className="IonIcon"
-                        ></IonIcon>
-                        <IonIcon
-                            src={attachOutline}
-                            className="IonIcon"
-                        ></IonIcon>
-                        <form onSubmit={sendMessage}>
-                            <input
-                                type="text"
-                                placeholder="Type a message"
-                                value={value}
-                                onChange={(e) => {
-                                    setValue(e.target.value);
-                                }}
-                            />
-                            <button className="chatbox_btn" type="submit">
-                                <IonIcon
-                                    src={sendOutline}
-                                    className="IonIcon"
-                                ></IonIcon>
-                            </button>
-                        </form>
-
-                        <IonIcon src={mic} className="IonIcon"></IonIcon>
-                    </div>
                 </div>
             </div>
         </>
