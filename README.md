@@ -39,6 +39,4 @@ WhatsApp
 
 Для начала работы в этом приложении необходимо авторизоваться на сайте https://green-api.com/ и получить idInstance и apiTokenInstance.
 
-Я разрабатывал только десктопную версию приложения.
-
 Ссылка на проект: https://green-api-app.vercel.app/
